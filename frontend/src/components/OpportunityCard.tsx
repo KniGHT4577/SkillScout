@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Bookmark, BookmarkCheck, Clock, Award, BarChart } from "lucide-react";
-import { motion } from "framer-motion";
 import { MotionCard, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/Card";
 import { Badge } from "./ui/Badge";
 import { Button } from "./ui/Button";
@@ -37,7 +36,7 @@ export function OpportunityCard({ opportunity, isBookmarked = false }: any) {
     toggleBookmark.mutate();
   };
 
-  const getDifficultyColor = (diff: str) => {
+  const getDifficultyColor = (diff: string) => {
     switch (diff) {
       case "beginner": return "bg-green-500/10 text-green-500 border-green-500/20";
       case "intermediate": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";

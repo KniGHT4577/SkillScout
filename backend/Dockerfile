@@ -17,4 +17,10 @@ RUN playwright install --with-deps chromium
 
 COPY . .
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Expose dynamic port for Cloud Run
+ENV PORT=8080
+
+# Make entrypoint executable
+RUN chmod +x docker-entrypoint.sh
+
+CMD ["./docker-entrypoint.sh"]

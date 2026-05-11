@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { getOpportunities, getBookmarks } from "@/api/opportunities";
@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Input } from "@/components/ui/Input";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { Search, Filter, Compass } from "lucide-react";
+import { Search, Compass } from "lucide-react";
 
 export function Dashboard() {
   const [search, setSearch] = useState("");
@@ -15,7 +15,7 @@ export function Dashboard() {
   const { isAuthenticated } = useAuthStore();
 
   // Debounce search
-  useState(() => {
+  useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(search), 500);
     return () => clearTimeout(handler);
   }, [search]);

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@/utils/cn"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion } from "framer-motion"
 
 const Card = React.forwardRef<
   HTMLDivElement,

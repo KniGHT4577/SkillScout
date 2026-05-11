@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Security
+from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_, desc
 from typing import Any, List, Optional
@@ -6,8 +7,33 @@ from typing import Any, List, Optional
 from app.db.session import get_db
 from app.models.opportunity import Opportunity, DifficultyLevel
 from app.schemas.opportunity import Opportunity as OpportunitySchema, PaginatedOpportunities
+from app.services.discovery import discover_opportunities
+from app.core.config import settings
 
 router = APIRouter()
+
+api_key_header = APIKeyHeader(name="X-Cron-Token", auto_error=False)
+
+async def verify_cron_token(api_key_header: str = Security(api_key_header)):
+    if not api_key_header or api_key_header != settings.CRON_SECRET_TOKEN:
+        raise HTTPException(
+            status_code=403, detail="Could not validate CRON credentials"
+        )
+    return api_key_header
+
+@router.post("/trigger-discovery", status_code=202)
+async def trigger_discovery_pipeline(token: str = Depends(verify_cron_token)):
+    """
+    Endpoint for Google Cloud Scheduler to trigger the scraping pipeline.
+    Cloud Run instances scale to zero, so internal APScheduler is unreliable.
+    """
+    # Import inside to avoid circular deps if any
+    import asyncio
+    
+    # Run in background so we don't block the Cloud Scheduler request
+    asyncio.create_task(discover_opportunities())
+    
+    return {"message": "Discovery pipeline triggered successfully"}
 
 @router.get("/", response_model=PaginatedOpportunities)
 async def get_opportunities(

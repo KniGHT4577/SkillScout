@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440 # 24 hours
     TAVILY_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
+    CRON_SECRET_TOKEN: str = "change-this-in-production-for-cloud-scheduler"
 
     class Config:
         env_file = ".env"

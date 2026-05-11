@@ -25,9 +25,11 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
-    url = config.get_main_option("sqlalchemy.url")
+    import os
+    # Default to env var, fallback to setting
+    db_url = os.environ.get("DATABASE_URL", app.core.config.settings.DATABASE_URL)
     context.configure(
-        url=url,
+        url=db_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -48,7 +50,7 @@ async def run_async_migrations() -> None:
 
     """
     import os
-    db_url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+    db_url = os.environ.get("DATABASE_URL", app.core.config.settings.DATABASE_URL)
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = db_url
 

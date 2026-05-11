@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
-import { Compass, Search, Bookmark, LogOut, User } from "lucide-react";
+import { Compass, Bookmark, LogOut, User } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 export function Navbar() {
