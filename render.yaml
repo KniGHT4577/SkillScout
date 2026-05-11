@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: skillscout-backend
+    env: python
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: CRON_SECRET_TOKEN
+        sync: false
+
+  - type: web
+    name: skillscout-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "./dist"
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: skillscout-backend
+          envVarKey: RENDER_EXTERNAL_URL
+
+  - type: cron
+    name: skillscout-scraper
+    env: python
+    schedule: "0 */4 * * *"
+    rootDir: backend
+    buildCommand: "echo 'No build needed'"
+    startCommand: "curl -X POST $API_URL/api/opportunities/trigger-discovery -H \"X-Cron-Token: $CRON_SECRET_TOKEN\""
+    envVars:
+      - key: CRON_SECRET_TOKEN
+        sync: false
+      - key: API_URL
+        fromService:
+          type: web
+          name: skillscout-backend
+          envVarKey: RENDER_EXTERNAL_URL
