@@ -1,9 +1,12 @@
 {
-  "name": "skillscout-root",
+  "name": "skillscout",
   "version": "1.0.0",
-  "description": "Root package.json to prevent Render from misdetecting the project as a Rust project",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "build": "echo \"Please set the Root Directory to frontend or backend in your Render Dashboard settings.\"",
-    "start": "echo \"Please set the Root Directory to frontend or backend in your Render Dashboard settings.\""
+    "build": "echo \"Render requires a correct Build Command setting. Skipping root build...\"",
+    "start": "echo \"Render requires a correct Start Command setting. Skipping root start...\""
   }
 }
