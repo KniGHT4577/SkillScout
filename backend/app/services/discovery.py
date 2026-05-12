@@ -44,8 +44,8 @@ async def discover_opportunities(query: str = "free tech certifications courses 
             urls = []
 
     # Process URLs
-    for url in urls:
-        await process_url(url)
+    if urls:
+        await asyncio.gather(*(process_url(url) for url in urls))
 
 async def process_url(url: str):
     """Scrape, analyze, and save a URL to the DB."""
