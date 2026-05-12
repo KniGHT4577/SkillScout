@@ -1,0 +1,10 @@
+{
+  "name": "skillscout-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root package.json to prevent Render from incorrectly auto-detecting a Rust project.",
+  "scripts": {
+    "build": "echo 'Error: Please set the Root Directory in the Render Dashboard to either \"frontend\" or \"backend\".' && false",
+    "start": "echo 'Error: Please set the Root Directory in the Render Dashboard.' && false"
+  }
+}
