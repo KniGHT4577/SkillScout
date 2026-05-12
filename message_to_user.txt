@@ -1,5 +1,0 @@
-Hey there, I analyzed the deployment logs on Render. Your PR deployment preview for branch \`test-improvement-auth-10473195395517795358\` is failing because the Render Dashboard has overridden the Build Configuration to "Rust" instead of matching what's inside \`render.yaml\`.
-
-Because the PR previews inherit configuration directly from the parent server's Render Dashboard Settings, please go to **Settings → Build & Deploy** on the parent Render service (\`SkillScout\`) and ensure you **Clear Overrides** so it points accurately to your monorepo's configuration.
-
-Since I don't have dashboard access to clear the overrides manually, you will need to do this step to resolve the \`Cargo.toml\` not found error!
