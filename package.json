@@ -1,0 +1,10 @@
+{
+  "name": "skillscout",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root package.json to prevent Render from auto-detecting Rust",
+  "scripts": {
+    "build": "echo 'Root directory build. Use frontend/ or backend/ for actual deployments.'",
+    "start": "echo 'Nothing to start at root'"
+  }
+}
