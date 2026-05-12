@@ -1,0 +1,6 @@
+{
+  "name": "skillscout",
+  "version": "1.0.0",
+  "description": "Monorepo root to prevent Render from auto-detecting Rust",
+  "scripts": {}
+}
