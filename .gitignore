@@ -6,3 +6,4 @@ __pycache__/
 backend.log
 frontend.log
 skillscout.db
+venv/
