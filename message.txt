@@ -1,0 +1,7 @@
+The build logs show that Render is trying to build a Rust project (`cargo build --release`) and failing with "could not find `Cargo.toml` in `/opt/render/project/src`".
+
+Based on my memory of common Render deployment traps:
+"When deploying the monorepo to Render, the Root Directory must be explicitly set to 'frontend' or 'backend' in the Render Dashboard (or via render.yaml). Deploying from the root directory without a package.json or requirements.txt causes Render to incorrectly auto-detect a Rust project, resulting in 'Cargo.toml not found' build errors.
+Beware of the Dashboard Override Trap: Render Dashboard settings (Build/Start Command, Language/Environment) override `render.yaml`. If auto-detected incorrectly as a Rust project (causing 'Cargo.toml not found' build errors), ensure dashboard overrides are cleared so `render.yaml` is properly respected."
+
+The user is encountering this exact issue because they probably deployed from the root directory (where there is no `package.json` or `requirements.txt`) and did not configure the overrides correctly in the dashboard. Wait, I should use `message_user` tool to tell them.
