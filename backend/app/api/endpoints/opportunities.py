@@ -1,3 +1,4 @@
+import secrets
 from fastapi import APIRouter, Depends, HTTPException, Query, Security
 from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +16,7 @@ router = APIRouter()
 api_key_header = APIKeyHeader(name="X-Cron-Token", auto_error=False)
 
 async def verify_cron_token(api_key_header: str = Security(api_key_header)):
-    if not api_key_header or api_key_header != settings.CRON_SECRET_TOKEN:
+    if not api_key_header or not secrets.compare_digest(api_key_header, settings.CRON_SECRET_TOKEN):
         raise HTTPException(
             status_code=403, detail="Could not validate CRON credentials"
         )
