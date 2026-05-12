@@ -1,3 +1,4 @@
+from typing import Optional, Any
 import httpx
 import logging
 import asyncio
@@ -43,11 +44,18 @@ async def discover_opportunities(query: str = "free tech certifications courses 
             logger.error(f"Error calling Tavily: {e}")
             urls = []
 
-    # Process URLs
-    for url in urls:
-        await process_url(url)
 
-async def process_url(url: str):
+    # Process URLs
+    from playwright.async_api import async_playwright
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        for url in urls:
+            await process_url(url, browser=browser)
+        await browser.close()
+
+
+
+async def process_url(url: str, browser: Optional[Any] = None):
     """Scrape, analyze, and save a URL to the DB."""
     async with AsyncSessionLocal() as db:
         # Check if already exists
@@ -59,7 +67,7 @@ async def process_url(url: str):
         logger.info(f"Processing new URL: {url}")
         
         # Scrape
-        text_content = await scrape_url(url)
+        text_content = await scrape_url(url, browser=browser)
         if not text_content:
             logger.warning(f"Could not extract text from {url}")
             return
