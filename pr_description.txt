@@ -1,5 +1,0 @@
-🎯 **What:** The testing gap in the frontend API calls has been addressed. We added vitest unit tests in `opportunities.test.ts`.
-
-📊 **Coverage:** Test coverage added for `getOpportunities`, `getBookmarks`, `createBookmark` and `deleteBookmark` simulating successful API interactions as well as handling exceptions in `deleteBookmark` function.
-
-✨ **Result:** Improved test coverage. Tests can be run via `npm run test` command.

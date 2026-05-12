@@ -2,9 +2,9 @@ import axios from 'axios';
 
 // When deployed together, we can often just hit `/api`
 // Fallback to local 8000 for local dev
-const baseURL = (import.meta.env && import.meta.env.PROD)
+const baseURL = import.meta.env.PROD
   ? '/api' 
-  : ((import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:8000/api');
+  : (import.meta.env.VITE_API_URL || 'http://localhost:8000/api');
 
 export const apiClient = axios.create({
   baseURL,
