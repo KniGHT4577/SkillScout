@@ -1,0 +1,8 @@
+{
+  "name": "skillscout-root",
+  "version": "1.0.0",
+  "description": "Root package.json to prevent Render from incorrectly auto-detecting a Rust project when Root Directory is not set in the Dashboard.",
+  "scripts": {
+    "build": "sh -c 'echo \"Please set Root Directory in Render dashboard\" && false'"
+  }
+}
