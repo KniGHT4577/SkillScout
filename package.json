@@ -1,0 +1,12 @@
+{
+  "name": "skillscout",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "echo \"Render requires a correct Build Command setting. Skipping root build...\"",
+    "start": "echo \"Render requires a correct Start Command setting. Skipping root start...\""
+  }
+}
