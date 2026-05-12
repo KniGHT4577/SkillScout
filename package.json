@@ -1,0 +1,8 @@
+{
+  "name": "skillscout",
+  "private": true,
+  "description": "Root package.json to prevent Render from misidentifying this monorepo as a Rust project when Root Directory is not set. Please deploy the 'frontend' and 'backend' directories as separate web services.",
+  "scripts": {
+    "build": "echo 'Please set the Root Directory to frontend or backend in your Render Dashboard settings.'"
+  }
+}
