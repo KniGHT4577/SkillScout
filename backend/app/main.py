@@ -7,6 +7,7 @@ import os
 
 from app.api.endpoints import auth, users, opportunities, bookmarks
 from app.services.scheduler import start_scheduler, seed_data
+from app.core.config import settings
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -39,7 +40,7 @@ app = FastAPI(title="SkillScout AI API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Update for production to actual domain
+    allow_origins=[str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS] if settings.BACKEND_CORS_ORIGINS else [],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
