@@ -1,0 +1,9 @@
+{
+  "name": "skillscout-root",
+  "version": "1.0.0",
+  "description": "Root package.json to prevent Render from misdetecting the project as a Rust project",
+  "scripts": {
+    "build": "echo \"Please set the Root Directory to frontend or backend in your Render Dashboard settings.\"",
+    "start": "echo \"Please set the Root Directory to frontend or backend in your Render Dashboard settings.\""
+  }
+}
