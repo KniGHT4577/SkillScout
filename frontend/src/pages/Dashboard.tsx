@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { getOpportunities, getBookmarks } from "@/api/opportunities";
@@ -31,7 +31,10 @@ export function Dashboard() {
     enabled: isAuthenticated,
   });
 
-  const bookmarkedIds = new Set(bookmarksData?.map((b: any) => b.opportunity_id) || []);
+  const bookmarkedIds = useMemo(
+    () => new Set(bookmarksData?.map((b: any) => b.opportunity_id) || []),
+    [bookmarksData]
+  );
 
   const categories = ["Course", "Certification", "Bootcamp", "Workshop"];
 
