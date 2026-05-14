@@ -1,0 +1,5 @@
+🎯 **What:** Removed the hardcoded fallback values for `SECRET_KEY` and `CRON_SECRET_TOKEN` from the `Settings` class in `backend/app/core/config.py`.
+
+⚠️ **Risk:** Including hardcoded secret keys directly in the source code can easily lead to compromised application security if the codebase is exposed or shared, allowing unauthorized access, data breaches, and execution of malicious cron endpoints.
+
+🛡️ **Solution:** By deleting the fallback string values, Pydantic `BaseSettings` natively enforces these variables as required. They must now be provided exclusively via the environment (such as a `.env` file or cloud secrets manager), significantly improving the security posture of the project. Added comprehensive tests to ensure validation triggers as expected when these environment variables are missing.
