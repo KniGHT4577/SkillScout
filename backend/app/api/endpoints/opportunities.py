@@ -10,6 +10,9 @@ from app.models.opportunity import Opportunity, DifficultyLevel
 from app.schemas.opportunity import Opportunity as OpportunitySchema, PaginatedOpportunities
 from app.services.discovery import discover_opportunities
 from app.core.config import settings
+from app.core.cache import cache
+import json
+
 
 router = APIRouter()
 
@@ -46,6 +49,12 @@ async def get_opportunities(
     difficulty: Optional[DifficultyLevel] = None,
     is_free: Optional[bool] = None,
 ) -> Any:
+    cache_key = f"opps:{page}:{size}:{search}:{category}:{difficulty}:{is_free}"
+
+    cached_result = await cache.get(cache_key)
+    if cached_result:
+        return cached_result
+
     skip = (page - 1) * size
     
     query = select(Opportunity)
@@ -83,12 +92,19 @@ async def get_opportunities(
     total_result = await db.execute(count_query)
     total = total_result.scalar_one()
     
-    return {
-        "items": items,
+    # Serialize items to dicts
+    serialized_items = [OpportunitySchema.model_validate(item).model_dump(mode='json') for item in items]
+
+    response_data = {
+        "items": serialized_items,
         "total": total,
         "page": page,
         "size": size
     }
+
+    await cache.set(cache_key, response_data)
+
+    return response_data
 
 @router.get("/{id}", response_model=OpportunitySchema)
 async def get_opportunity(id: int, db: AsyncSession = Depends(get_db)) -> Any:
