@@ -1,0 +1,8 @@
+{
+  "name": "skillscout-root",
+  "version": "1.0.0",
+  "description": "Dummy package.json to prevent Render from incorrectly auto-detecting a Rust environment from the root directory.",
+  "scripts": {
+    "build": "echo 'This is a monorepo. Please ensure you have set the Root Directory to frontend/ or backend/ in the Render Dashboard Settings, and cleared any Build Command overrides!'"
+  }
+}
