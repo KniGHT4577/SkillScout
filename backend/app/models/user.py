@@ -14,4 +14,3 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     bookmarks = relationship("Bookmark", back_populates="user")
-    search_history = relationship("SearchHistory", back_populates="user")
