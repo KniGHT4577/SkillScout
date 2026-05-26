@@ -6,8 +6,12 @@ from app.core.security.jwt import decode_access_token
 from app.schemas.user import TokenData
 from app.models.user import User
 from sqlalchemy import select
+from cachetools import TTLCache
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+
+# Cache to store user objects by email (max 1000 items, expires in 5 minutes)
+user_cache = TTLCache(maxsize=1000, ttl=300)
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
@@ -19,6 +23,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     email: str = payload.get("sub")
     if email is None:
         raise credentials_exception
+
+    # Check cache first using get() to avoid KeyError if TTL expires between check and access
+    cached_user = user_cache.get(email)
+    if cached_user:
+        return cached_user
+
     token_data = TokenData(email=email)
     
     result = await db.execute(select(User).where(User.email == token_data.email))
@@ -26,6 +36,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     
     if user is None:
         raise credentials_exception
+
+    # Store in cache
+    user_cache[email] = user
     return user
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
