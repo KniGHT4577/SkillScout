@@ -29,6 +29,7 @@ services:
       - ACCESS_TOKEN_EXPIRE_MINUTES=1440
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - CRON_SECRET_TOKEN=${CRON_SECRET_TOKEN:-your_secure_cron_token}
     volumes:
       - ./backend:/app
     depends_on:
