@@ -52,7 +52,7 @@ waiting for navigation to "http://localhost:5173/dashboard" until "load"
           - textbox "John Doe" [ref=e34]: End-to-End User
         - generic [ref=e35]:
           - text: Email
-          - textbox "name@example.com" [ref=e36]: testuser_1779824522229@example.com
+          - textbox "name@example.com" [ref=e36]: testuser_1779824696944@example.com
         - generic [ref=e37]:
           - text: Password
           - textbox "••••••••" [ref=e38]: Password123!
