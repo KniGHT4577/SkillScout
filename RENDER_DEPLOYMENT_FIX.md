@@ -1,18 +1,11 @@
-# Fixing Render Deployment: "Cargo.toml not found"
+# Render Deployment Instructions
+The deployment failed with 'Cargo.toml not found' because Render incorrectly auto-detected this monorepo as a Rust project.
+To fix this, you must manually clear the Dashboard Overrides so that 'render.yaml' is respected.
 
-## The Issue
-Your Render deployment failed with a Rust build error (`error: could not find 'Cargo.toml'`).
-Because this is a monorepo containing both a `frontend` and a `backend` directory, deploying the root directory without explicitly telling Render which sub-directory to build causes Render's auto-detection to fall back to Rust.
+1. Go to your Render Dashboard (https://dashboard.render.com).
+2. Select the failing service.
+3. Go to **Settings -> Build & Deploy**.
+4. Clear the **Root Directory** field, or ensure it is correctly set to 'backend' (for the API) or 'frontend' (for the static site).
+5. Ensure the Build Command and Start Command are not overridden.
+6. Save the changes and retry the deploy.
 
-## The Fix
-You need to update your **Render Dashboard** settings to specify the correct Root Directory for your web service.
-
-1. Go to your Render Dashboard: https://dashboard.render.com
-2. Select your failing Web Service.
-3. Go to **Settings** -> **Build & Deploy**.
-4. Find the **Root Directory** setting.
-5. Change it to `backend` (if deploying the Python API) or `frontend` (if deploying the React UI).
-6. Click **Save Changes**.
-7. Render will automatically start a new deploy using the correct directory context.
-
-*(Note: If you intended to use the `render.yaml` Blueprint, ensure you created a "Blueprint Instance" rather than a standard "Web Service" so that the config is automatically applied).*
