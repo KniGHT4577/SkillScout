@@ -24,7 +24,7 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any
             detail="The user with this email already exists in the system.",
         )
     
-    hashed_password = get_password_hash(user_in.password)
+    hashed_password = await get_password_hash(user_in.password)
     user = User(
         email=user_in.email,
         hashed_password=hashed_password,
@@ -39,7 +39,7 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)) -> Any:
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not await verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
