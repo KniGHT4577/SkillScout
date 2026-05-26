@@ -45,7 +45,13 @@ async def discover_opportunities(query: str = "free tech certifications courses 
 
     # Process URLs
     if urls:
-        await asyncio.gather(*(process_url(url) for url in urls))
+        # Bound concurrent DB/scraping operations to prevent resource exhaustion
+        semaphore = asyncio.Semaphore(5)
+
+        async def bounded_process_url(u: str):
+            async with semaphore:
+                await process_url(u)
+        await asyncio.gather(*(bounded_process_url(url) for url in urls))
 
 async def process_url(url: str):
     """Scrape, analyze, and save a URL to the DB."""
