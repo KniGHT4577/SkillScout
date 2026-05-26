@@ -16,3 +16,7 @@ You need to update your **Render Dashboard** settings to specify the correct Roo
 7. Render will automatically start a new deploy using the correct directory context.
 
 *(Note: If you intended to use the `render.yaml` Blueprint, ensure you created a "Blueprint Instance" rather than a standard "Web Service" so that the config is automatically applied).*
+
+
+# Update
+Please follow these steps exactly.
