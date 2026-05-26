@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, BeforeValidator, validator
 from typing import Annotated, Any
 
@@ -20,9 +20,8 @@ class Settings(BaseSettings):
     OPENROUTER_API_KEY: str | None = None
     CRON_SECRET_TOKEN: str = "change-this-in-production-for-cloud-scheduler"
 
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyHttpUrl] | str, BeforeValidator(parse_cors)] | list[str] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8000"]
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyHttpUrl] | str, BeforeValidator(parse_cors)] | list[str] = []
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
