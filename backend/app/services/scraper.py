@@ -1,8 +1,22 @@
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
+
+def _parse_html_sync(html: str) -> str:
+    """Synchronous function to parse HTML with BeautifulSoup. This is CPU bound."""
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # Remove scripts and styles
+    for script in soup(["script", "style", "nav", "footer"]):
+        script.extract()
+
+    text = soup.get_text(separator=' ', strip=True)
+
+    # Truncate to reasonable length for AI processing
+    return text[:10000]
 
 async def scrape_url(url: str) -> str:
     """Scrapes the visible text from a URL using Playwright."""
@@ -18,17 +32,10 @@ async def scrape_url(url: str) -> str:
             html = await page.content()
             await browser.close()
             
-            # Use BeautifulSoup to extract text cleanly
-            soup = BeautifulSoup(html, 'html.parser')
+            # Use asyncio.to_thread to avoid blocking the event loop with CPU-heavy parsing
+            text = await asyncio.to_thread(_parse_html_sync, html)
             
-            # Remove scripts and styles
-            for script in soup(["script", "style", "nav", "footer"]):
-                script.extract()
-                
-            text = soup.get_text(separator=' ', strip=True)
-            
-            # Truncate to reasonable length for AI processing
-            return text[:10000] 
+            return text
     except Exception as e:
         logger.error(f"Error scraping {url}: {e}")
         return ""
