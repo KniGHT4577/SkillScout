@@ -11,3 +11,4 @@ To fix this deployment error, please manually update the "Root Directory" in the
 3. Navigate to **Settings** -> **Build & Deploy**.
 4. Change the **Root Directory** from the default (blank or `/`) to either `frontend` or `backend`, depending on which service this is.
 5. Save the changes and trigger a manual deploy.
+\n* Update to trigger new commit
