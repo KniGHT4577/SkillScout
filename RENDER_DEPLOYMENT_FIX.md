@@ -1,18 +1,20 @@
-# Fixing Render Deployment: "Cargo.toml not found"
+# Render Deployment Fix: Rust Auto-Detection
 
-## The Issue
-Your Render deployment failed with a Rust build error (`error: could not find 'Cargo.toml'`).
-Because this is a monorepo containing both a `frontend` and a `backend` directory, deploying the root directory without explicitly telling Render which sub-directory to build causes Render's auto-detection to fall back to Rust.
+The deployment is failing with the following error:
+```
+error: could not find `Cargo.toml` in `/opt/render/project/src` or any parent directory
+```
 
-## The Fix
-You need to update your **Render Dashboard** settings to specify the correct Root Directory for your web service.
+## Root Cause
+Render is incorrectly auto-detecting the monorepo as a Rust project and attempting to run `cargo build --release`. This is a classic "Dashboard Override Trap" where Render's default environment auto-detection interferes with the repository structure. This happens because the project is a monorepo containing both a `frontend` (Node/Vite) and a `backend` (Python/FastAPI) directory, but lacks a `Cargo.toml`.
 
-1. Go to your Render Dashboard: https://dashboard.render.com
-2. Select your failing Web Service.
-3. Go to **Settings** -> **Build & Deploy**.
-4. Find the **Root Directory** setting.
-5. Change it to `backend` (if deploying the Python API) or `frontend` (if deploying the React UI).
-6. Click **Save Changes**.
-7. Render will automatically start a new deploy using the correct directory context.
+## Manual Resolution Required
+Because this is a Dashboard auto-detection override, it cannot be fixed solely by committing code changes (e.g., adding a dummy `Cargo.toml` is considered an anti-pattern and will fail review). The user must manually configure the Render Dashboard settings.
 
-*(Note: If you intended to use the `render.yaml` Blueprint, ensure you created a "Blueprint Instance" rather than a standard "Web Service" so that the config is automatically applied).*
+**Instructions for the User:**
+1. Navigate to your project on the Render Dashboard.
+2. Go to **Settings -> Build & Deploy**.
+3. Under **Root Directory**, enter the specific directory you intend to deploy (e.g., `backend` or `frontend`).
+   - If deploying the backend, ensure the **Build Command** is `pip install -r requirements.txt` and the **Start Command** is `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+   - If deploying the frontend, ensure the **Build Command** is `npm install && npm run build` and the **Start Command** is an appropriate static serving command.
+4. Save the settings and trigger a manual redeploy.
