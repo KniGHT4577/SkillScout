@@ -11,3 +11,4 @@ To fix this, you must manually configure the Render Dashboard settings, which ov
 3. Navigate to **Settings -> Build & Deploy**.
 4. Update the **Root Directory** field to either `backend` or `frontend`, depending on the service you are trying to deploy.
 5. Save the changes and trigger a manual deploy.
+Update: Deployment still failing because Dashboard settings must be manually changed.
