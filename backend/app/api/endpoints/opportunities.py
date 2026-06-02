@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_, desc
 from typing import Any, List, Optional
 import secrets
+import asyncio
 
 from app.db.session import get_db
 from app.models.opportunity import Opportunity, DifficultyLevel
@@ -77,10 +78,13 @@ async def get_opportunities(
         
     query = query.offset(skip).limit(size)
     
-    result = await db.execute(query)
-    items = result.scalars().all()
+    # Optimize by running queries concurrently
+    result, total_result = await asyncio.gather(
+        db.execute(query),
+        db.execute(count_query)
+    )
     
-    total_result = await db.execute(count_query)
+    items = result.scalars().all()
     total = total_result.scalar_one()
     
     return {
