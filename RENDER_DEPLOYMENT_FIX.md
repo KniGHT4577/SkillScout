@@ -10,3 +10,4 @@ This is a known issue called the **Dashboard Override Trap**.
 3. Change the **Root Directory** setting manually to `backend` (or `frontend`, depending on which service you are deploying).
 
 This manual override is required to bypass Render's auto-detection.
+## Update: Trigger commit
