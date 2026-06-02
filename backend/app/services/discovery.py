@@ -45,7 +45,13 @@ async def discover_opportunities(query: str = "free tech certifications courses 
 
     # Process URLs
     if urls:
-        await asyncio.gather(*(process_url(url) for url in urls))
+        async with AsyncSessionLocal() as db:
+            existing_query = await db.execute(select(Opportunity.url).where(Opportunity.url.in_(urls)))
+            existing_urls = set(existing_query.scalars().all())
+
+        new_urls = [url for url in urls if url not in existing_urls]
+        if new_urls:
+            await asyncio.gather(*(process_url(url) for url in new_urls))
 
 async def process_url(url: str):
     """Scrape, analyze, and save a URL to the DB."""
