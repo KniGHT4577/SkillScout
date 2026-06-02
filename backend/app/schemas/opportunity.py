@@ -17,8 +17,6 @@ class OpportunityBase(BaseModel):
     estimated_duration: Optional[str] = None
     source: Optional[str] = None
 
-class OpportunityCreate(OpportunityBase):
-    pass
 
 class Opportunity(OpportunityBase):
     id: int
