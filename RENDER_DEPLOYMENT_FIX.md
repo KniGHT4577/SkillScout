@@ -1,18 +1,27 @@
-# Fixing Render Deployment: "Cargo.toml not found"
+# Render Deployment Fix: Rust Auto-Detection Error
 
-## The Issue
-Your Render deployment failed with a Rust build error (`error: could not find 'Cargo.toml'`).
-Because this is a monorepo containing both a `frontend` and a `backend` directory, deploying the root directory without explicitly telling Render which sub-directory to build causes Render's auto-detection to fall back to Rust.
+The Render deployment failed because Render incorrectly auto-detected this project as a Rust project and attempted to run `cargo build --release`.
+The logs show: `error: could not find 'Cargo.toml' in '/opt/render/project/src' or any parent directory`.
 
-## The Fix
-You need to update your **Render Dashboard** settings to specify the correct Root Directory for your web service.
+Since this is a monorepo consisting of a FastAPI backend and a React frontend, it does not use Rust.
+This is known as the "Dashboard Override Trap", where Render's default environment detection or Dashboard settings override the configurations in `render.yaml`.
 
-1. Go to your Render Dashboard: https://dashboard.render.com
-2. Select your failing Web Service.
+## How to Fix
+
+You must manually update your Render Dashboard settings.
+Please follow these steps:
+
+1. Log into your Render Dashboard.
+2. Navigate to your specific service (Web Service or Static Site).
 3. Go to **Settings** -> **Build & Deploy**.
-4. Find the **Root Directory** setting.
-5. Change it to `backend` (if deploying the Python API) or `frontend` (if deploying the React UI).
-6. Click **Save Changes**.
-7. Render will automatically start a new deploy using the correct directory context.
-
-*(Note: If you intended to use the `render.yaml` Blueprint, ensure you created a "Blueprint Instance" rather than a standard "Web Service" so that the config is automatically applied).*
+4. Update the **Root Directory** setting:
+   - For the backend service, set the Root Directory to `backend`.
+   - For the frontend service, set the Root Directory to `frontend`.
+5. Ensure the Build Command and Start Command match the project type:
+   - **Backend**:
+     - Build Command: `pip install -r requirements.txt && alembic upgrade head`
+     - Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+   - **Frontend**:
+     - Build Command: `npm install && npm run build`
+     - Start Command: `npx serve -s dist` (or whichever output directory is used)
+6. Manually trigger a new deploy.
