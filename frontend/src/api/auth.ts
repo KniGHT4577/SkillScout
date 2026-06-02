@@ -20,3 +20,8 @@ export const getMe = async () => {
   const response = await apiClient.get('/users/me');
   return response.data;
 };
+
+export const logout = async () => {
+  const response = await apiClient.post('/auth/logout');
+  return response.data;
+};
