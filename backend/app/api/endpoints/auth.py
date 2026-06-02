@@ -10,19 +10,26 @@ from app.core.config import settings
 from app.core.security.password import verify_password, get_password_hash
 from app.core.security.jwt import create_access_token
 from app.models.user import User
-from app.schemas.user import UserCreate, User as UserSchema, Token
+from app.schemas.user import UserCreate, Token
+from pydantic import BaseModel
 
 router = APIRouter()
 
-@router.post("/signup", response_model=UserSchema)
+class SignupResponse(BaseModel):
+    message: str
+
+@router.post("/signup", response_model=SignupResponse)
 async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any:
     result = await db.execute(select(User).where(User.email == user_in.email))
     user = result.scalars().first()
+
+    success_response = {"message": "Signup process completed."}
+
     if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system.",
-        )
+        # Prevent timing attacks by hashing a dummy password
+        # This ensures the response time is roughly equal whether the user exists or not
+        get_password_hash(user_in.password)
+        return success_response
     
     hashed_password = get_password_hash(user_in.password)
     user = User(
@@ -32,8 +39,8 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any
     )
     db.add(user)
     await db.commit()
-    await db.refresh(user)
-    return user
+
+    return success_response
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)) -> Any:
