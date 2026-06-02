@@ -1,5 +1,5 @@
-from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, BeforeValidator, validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import AnyHttpUrl, BeforeValidator
 from typing import Annotated, Any
 
 def parse_cors(v: Any) -> list[str] | str:
@@ -22,7 +22,6 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: Annotated[list[AnyHttpUrl] | str, BeforeValidator(parse_cors)] | list[str] = ["http://localhost:5173", "http://localhost:3000", "http://localhost:8000"]
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
