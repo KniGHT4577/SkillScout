@@ -8,6 +8,7 @@ import os
 from app.api.endpoints import auth, users, opportunities, bookmarks
 from app.services.scheduler import start_scheduler, seed_data
 from app.core.config import settings
+from app.services.scraper import close_browser
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -35,6 +36,9 @@ async def lifespan(app: FastAPI):
     # Shutdown
     if scheduler:
         scheduler.shutdown()
+
+    # Close browser instances created during app lifecycle
+    await close_browser()
 
 app = FastAPI(title="SkillScout AI API", lifespan=lifespan)
 
