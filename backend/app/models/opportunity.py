@@ -18,16 +18,16 @@ class Opportunity(Base):
     provider = Column(String, nullable=False) # e.g., Coursera, Udemy, Local Bootcamp
     url = Column(String, unique=True, nullable=False)
     description = Column(Text)
-    category = Column(String) # e.g., Certification, Course, Bootcamp
+    category = Column(String, index=True) # e.g., Certification, Course, Bootcamp
     
     # Pricing info
-    is_free = Column(Boolean, default=True)
+    is_free = Column(Boolean, default=True, index=True)
     original_price = Column(String, nullable=True)
     
     # AI generated metadata
     ai_summary = Column(Text, nullable=True)
     skills_covered = Column(String, nullable=True) # Comma separated or JSON string
-    difficulty = Column(Enum(DifficultyLevel), default=DifficultyLevel.all_levels)
+    difficulty = Column(Enum(DifficultyLevel), default=DifficultyLevel.all_levels, index=True)
     estimated_duration = Column(String, nullable=True)
     
     source = Column(String) # Where did we find it (e.g., Tavily, direct scrape)
