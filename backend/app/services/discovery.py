@@ -47,27 +47,13 @@ async def discover_opportunities(query: str = "free tech certifications courses 
     if urls:
         await asyncio.gather(*(process_url(url) for url in urls))
 
-async def process_url(url: str):
-    """Scrape, analyze, and save a URL to the DB."""
+async def _url_exists(url: str) -> bool:
     async with AsyncSessionLocal() as db:
-        # Check if already exists
         existing = await db.execute(select(Opportunity).where(Opportunity.url == url))
-        if existing.scalars().first():
-            logger.info(f"URL already exists in DB: {url}")
-            return
-            
-        logger.info(f"Processing new URL: {url}")
-        
-        # Scrape
-        text_content = await scrape_url(url)
-        if not text_content:
-            logger.warning(f"Could not extract text from {url}")
-            return
-            
-        # Analyze
-        metadata = await generate_ai_metadata(url, text_content)
-        
-        # Ensure enum values are correct
+        return existing.scalars().first() is not None
+
+async def _save_opportunity(url: str, text_content: str, metadata: dict):
+    async with AsyncSessionLocal() as db:
         diff_str = metadata.get("difficulty", "all_levels").lower()
         diff_enum = DifficultyLevel.all_levels
         try:
@@ -75,12 +61,11 @@ async def process_url(url: str):
         except ValueError:
             pass
 
-        # Save to DB
         new_opp = Opportunity(
             title=metadata.get("title", "Unknown Title"),
             provider=metadata.get("provider", "Unknown Provider"),
             url=url,
-            description=text_content[:500] + "...", # Small snippet
+            description=text_content[:500] + "...",
             category=metadata.get("category", "Course"),
             is_free=metadata.get("is_free", True),
             original_price=metadata.get("original_price"),
@@ -98,3 +83,20 @@ async def process_url(url: str):
         except Exception as e:
             await db.rollback()
             logger.error(f"Failed to save {url} to DB: {e}")
+
+async def process_url(url: str):
+    """Scrape, analyze, and save a URL to the DB."""
+    if await _url_exists(url):
+        logger.info(f"URL already exists in DB: {url}")
+        return
+
+    logger.info(f"Processing new URL: {url}")
+
+    text_content = await scrape_url(url)
+    if not text_content:
+        logger.warning(f"Could not extract text from {url}")
+        return
+
+    metadata = await generate_ai_metadata(url, text_content)
+
+    await _save_opportunity(url, text_content, metadata)
