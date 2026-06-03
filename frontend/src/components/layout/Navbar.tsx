@@ -1,13 +1,24 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
+import { logout as apiLogout } from "@/api/auth";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import { Compass, Bookmark, LogOut, User } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 export function Navbar() {
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout: storeLogout } = useAuthStore();
   const location = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await apiLogout();
+    } catch (error) {
+      console.error("Logout error", error);
+    } finally {
+      storeLogout();
+    }
+  };
 
   const navLinks = [
     { name: "Discover", path: "/dashboard", icon: Compass },
@@ -65,7 +76,7 @@ export function Navbar() {
                 <User className="h-4 w-4" />
                 <span>{user?.email}</span>
               </div>
-              <Button variant="ghost" size="icon" onClick={logout} title="Log out">
+              <Button variant="ghost" size="icon" onClick={handleLogout} title="Log out">
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>

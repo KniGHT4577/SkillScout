@@ -22,11 +22,10 @@ export function Login() {
 
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: async (data) => {
-      localStorage.setItem("token", data.access_token);
+    onSuccess: async () => {
       try {
         const user = await getMe();
-        setAuth(user, data.access_token);
+        setAuth(user);
         navigate("/dashboard");
       } catch (e) {
         setError("Failed to fetch user profile.");

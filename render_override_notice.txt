@@ -1,0 +1,9 @@
+DEPLOYMENT BLOCKED BY RENDER DASHBOARD OVERRIDE TRAP.
+
+Please manually configure the Render Dashboard for your services as it is overriding `render.yaml` and detecting this as a Rust project:
+
+1. Go to your Render Dashboard
+2. Select your web service
+3. Go to Settings -> Build & Deploy
+4. Update the "Root Directory" to `backend` (or `frontend` for the UI service).
+5. Update Language to `Python` (or `Node` for frontend).

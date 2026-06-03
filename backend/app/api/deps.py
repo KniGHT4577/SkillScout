@@ -1,6 +1,9 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.security.utils import get_authorization_scheme_param
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional
+
 from app.db.session import get_db
 from app.core.security.jwt import decode_access_token
 from app.schemas.user import TokenData
@@ -8,7 +11,33 @@ from app.models.user import User
 from sqlalchemy import select
 from cachetools import TTLCache
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
+    async def __call__(self, request: Request) -> Optional[str]:
+        # Try to get token from cookie first
+        authorization = request.cookies.get("access_token")
+
+        scheme, param = get_authorization_scheme_param(
+            authorization
+        )
+        if not authorization or scheme.lower() != "bearer":
+            # Fallback to header
+            authorization = request.headers.get("Authorization")
+            scheme, param = get_authorization_scheme_param(
+                authorization
+            )
+
+        if not authorization or scheme.lower() != "bearer":
+            if self.auto_error:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Not authenticated",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            else:
+                return None
+        return param
+
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="api/auth/login")
 
 # Cache to store user objects by email (max 1000 items, expires in 5 minutes)
 user_cache = TTLCache(maxsize=1000, ttl=300)
