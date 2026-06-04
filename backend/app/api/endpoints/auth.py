@@ -12,7 +12,12 @@ from app.core.security.jwt import create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate, User as UserSchema, Token
 
+
+# A static dummy hash to prevent timing attacks
+DUMMY_PASSWORD_HASH = "$2b$12$dow.uNsOYXuzWp4J3SP3guhaGMsmKeRN1hBzUqv8d88YFkExO/zWW"
+
 router = APIRouter()
+
 
 @router.post("/signup", response_model=UserSchema)
 async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any:
@@ -39,7 +44,15 @@ async def signup(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> Any
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)) -> Any:
     result = await db.execute(select(User).where(User.email == form_data.username))
     user = result.scalars().first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+
+    # Timing attack mitigation
+    if user:
+        is_password_correct = verify_password(form_data.password, user.hashed_password)
+    else:
+        is_password_correct = False
+        verify_password(form_data.password, DUMMY_PASSWORD_HASH)
+
+    if not user or not is_password_correct:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
