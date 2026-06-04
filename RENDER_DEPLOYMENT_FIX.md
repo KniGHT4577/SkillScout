@@ -1,18 +1,19 @@
-# Fixing Render Deployment: "Cargo.toml not found"
+# Render Deployment Fix
 
-## The Issue
-Your Render deployment failed with a Rust build error (`error: could not find 'Cargo.toml'`).
-Because this is a monorepo containing both a `frontend` and a `backend` directory, deploying the root directory without explicitly telling Render which sub-directory to build causes Render's auto-detection to fall back to Rust.
+The repeated deployment failures showing \`could not find 'Cargo.toml'\` are caused by the **Render Dashboard Override Trap**.
 
-## The Fix
-You need to update your **Render Dashboard** settings to specify the correct Root Directory for your web service.
+Render is ignoring the configuration in \`render.yaml\` and is instead using dashboard-level settings that falsely identify this project (a Python/Node monorepo) as a Rust application.
 
-1. Go to your Render Dashboard: https://dashboard.render.com
-2. Select your failing Web Service.
-3. Go to **Settings** -> **Build & Deploy**.
-4. Find the **Root Directory** setting.
-5. Change it to `backend` (if deploying the Python API) or `frontend` (if deploying the React UI).
-6. Click **Save Changes**.
-7. Render will automatically start a new deploy using the correct directory context.
+**You must manually clear these overrides in your Render Dashboard:**
 
-*(Note: If you intended to use the `render.yaml` Blueprint, ensure you created a "Blueprint Instance" rather than a standard "Web Service" so that the config is automatically applied).*
+1. Log in to your Render Dashboard.
+2. Navigate to your \`skillscout-backend\` and \`skillscout-frontend\` services.
+3. Click on **Settings**.
+4. In the **Build & Deploy** section, ensure the following fields are **cleared/empty** so that \`render.yaml\` can take effect:
+   - Build Command
+   - Start Command
+   - Root Directory
+   - Language / Environment (Should rely on \`render.yaml\` if possible, or explicitly set to Python/Node respectively)
+5. Save your settings and trigger a manual deploy.
+
+*Note: The frontend builds successfully in \`NODE_ENV=production\` mode locally without devDependency issues. The failure is entirely due to the incorrect build environment being triggered.*
