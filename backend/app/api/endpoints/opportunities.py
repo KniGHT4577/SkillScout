@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Security
 from fastapi.security.api_key import APIKeyHeader
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_, desc
-from typing import Any, List, Optional
+from typing import Any, Optional
 import secrets
 
 from app.db.session import get_db
