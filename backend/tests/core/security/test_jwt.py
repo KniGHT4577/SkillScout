@@ -45,3 +45,40 @@ def test_create_access_token_custom_expiration(mock_datetime):
     expected_expire = fixed_now + expires_delta
     # JWT standard expiration claims are integers (Unix timestamps)
     assert decoded.get("exp") == int(expected_expire.timestamp())
+
+from app.core.security.jwt import decode_access_token
+
+def test_decode_access_token_success():
+    data = {"sub": "user_456"}
+    token = create_access_token(data=data)
+
+    decoded = decode_access_token(token)
+
+    assert decoded.get("sub") == "user_456"
+    assert "exp" in decoded
+
+def test_decode_access_token_expired():
+    data = {"sub": "user_456"}
+    # Create a token that expired 1 hour ago
+    expires_delta = timedelta(hours=-1)
+    token = create_access_token(data=data, expires_delta=expires_delta)
+
+    decoded = decode_access_token(token)
+
+    assert decoded == {}
+
+def test_decode_access_token_invalid_signature():
+    data = {"sub": "user_456"}
+    token = create_access_token(data=data)
+
+    # Tamper with the token to make the signature invalid
+    invalid_token = token + "invalid"
+
+    decoded = decode_access_token(invalid_token)
+
+    assert decoded == {}
+
+def test_decode_access_token_invalid_format():
+    decoded = decode_access_token("not.a.valid.jwt")
+
+    assert decoded == {}
